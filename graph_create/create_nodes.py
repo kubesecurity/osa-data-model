@@ -18,7 +18,7 @@ class CreateNodesInGraph:
         query = cls.label_builder("probable_vulnerability") + cls.property_builder(
             vertex_label="probable_vulnerability", probable_vuln_id=prob_cve_id
         )
-        return cls.gremlin_adapter.execute_query(query)
+        return cls.execute_query(query)
 
     @classmethod
     def create_dependency_node(cls, dependency_name: str, dependency_path: str) -> Dict:
@@ -28,7 +28,7 @@ class CreateNodesInGraph:
             dependency_name=dependency_name,
             dependency_path=dependency_path,
         )
-        return cls.gremlin_adapter.execute_query(query)
+        return cls.execute_query(query)
 
     @classmethod
     def create_reported_cve_node(
@@ -38,7 +38,7 @@ class CreateNodesInGraph:
         query = cls.label_builder("reported_cve") + cls.property_builder(
             vertex_label="reported_cve", CVE_ID=cve_id, CVSS=cvss, severity=severity
         )
-        return cls.gremlin_adapter.execute_query(query)
+        return cls.execute_query(query)
 
     @classmethod
     def create_feedback_node(
@@ -54,7 +54,7 @@ class CreateNodesInGraph:
             event_type=event_type, author=author, body=body, feedback_type=feedback_type
         )
         # TODO: Join to the corresponding event node.
-        return cls.gremlin_adapter.execute_query(query)
+        return cls.execute_query(query)
 
     @classmethod
     def create_security_event_node(
@@ -68,7 +68,7 @@ class CreateNodesInGraph:
             event_id=event_id,
             vertex_label="security_event",
         )
-        return cls.gremlin_adapter.execute_query(query)
+        return cls.execute_query(query)
 
     @classmethod
     def create_dependency_version_node(cls, version: str, dep_name: str) -> Dict:
@@ -78,7 +78,7 @@ class CreateNodesInGraph:
             version=version, dependency_name=dep_name, vertex_label="dependency_version"
         )
         # TODO: Join to dependency node.
-        return cls.gremlin_adapter.execute_query(query)
+        return cls.execute_query(query)
 
     @classmethod
     def create_ecosystem_node(cls, ecosystem_name: str) -> Dict:
@@ -86,6 +86,12 @@ class CreateNodesInGraph:
         query = cls.label_builder("ecosystem") + cls.property_builder(
             ecosystem=ecosystem_name, vertex_label="ecosystem"
         )
+        return cls.execute_query(query)
+
+    @classmethod
+    def execute_query(cls, query) -> Dict:
+        """Execute the gremlin query, but modify it by adding a commit and a .next()."""
+        query += ".next();"
         return cls.gremlin_adapter.execute_query(query)
 
     @staticmethod
@@ -100,7 +106,7 @@ class CreateNodesInGraph:
             Part of the gremlin query g.V(label_name).
 
         """
-        return "g.V('{}')".format(label_name)
+        return "g.addV('{}')".format(label_name)
 
     @staticmethod
     def property_builder(**kwargs) -> str:

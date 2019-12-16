@@ -1,5 +1,5 @@
 {
-  "event_id": "openshift-origin-233",
+  "event_id": "depowner-depname-233",
   "event_type": "issue",
   "body": "some issue body",
   "title": "some issue title"

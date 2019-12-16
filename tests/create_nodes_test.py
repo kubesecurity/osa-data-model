@@ -10,7 +10,7 @@ import json
 
 def test_label_builder():
     """Test if the labels for nodes are properly built."""
-    assert CreateNodesInGraph.label_builder("test") == "g.V('test')"
+    assert CreateNodesInGraph.label_builder("test") == "g.addV('test')"
 
 
 def test_property_builder():
@@ -33,7 +33,7 @@ def test_create_dependency_version_node(monkeypatch):
         CreateNodesInGraph.create_dependency_version_node(
             "1.0.0.alpha-v1", "github.com/kubernetes/apimachineary"
         )["executed"]
-        == "g.V('dependency_version').property('version', '1.0.0.alpha-v1').property("
+        == "g.addV('dependency_version').property('version', '1.0.0.alpha-v1').property("
         "'dependency_name', 'github.com/kubernetes/apimachineary').property('vertex_label', "
-        "'dependency_version')"
+        "'dependency_version').next();g.V().commit();"
     )

@@ -1,4 +1,4 @@
 {
-  "dependency_name": "apimachinery",
-  "dependency_path": "github.com/kubernetes/apimachinery"
+  "dependency_name": "depname",
+  "dependency_path": "github.com/depowner/depname"
 }

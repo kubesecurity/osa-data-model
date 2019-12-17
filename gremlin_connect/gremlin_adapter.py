@@ -6,8 +6,8 @@ from json import JSONDecodeError
 import daiquiri
 import requests
 
-daiquiri.setup(level=logging.INFO)
-logger = daiquiri.getLogger(__name__)
+daiquiri.setup(level=logging.DEBUG)
+_logr = daiquiri.getLogger(__name__)
 
 GREMLIN_DEFAULT_PORT = 8182
 GREMLIN_DEFAULT_HOST = "localhost"
@@ -63,14 +63,15 @@ class GremlinAdapter:
 
     def execute_query(self, query):
         """Execute a query on the Gremlin server."""
+        _logr.debug("Executing query: {}\n".format(query))
         response = requests.get(self.gremlin_url, params={"gremlin": query})
         try:
             return response.json()
         except JSONDecodeError:
-            logger.error(
+            _logr.error(
                 "Got JSON decoding error, payload: {}\n".format(response.json())
             )
             return {}
         except TypeError:
-            logger.error("Got TypeError, payload: {}\n".format(response.json()))
+            _logr.error("Got TypeError, payload: {}\n".format(response.json()))
             return {}

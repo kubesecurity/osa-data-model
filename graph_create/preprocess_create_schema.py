@@ -58,7 +58,7 @@ def create_nodes(*args, **kwargs):
             f = open(os.path.join(DATA_DIR, "identified_cve.json"))
             identified_cve = decode_json(f.read())
             CreateNodesInGraph.create_reported_cve_node(
-                cve_id=identified_cve["cve_id"],
-                cvss=identified_cve["cvss"],
+                cve_id=identified_cve["CVE_ID"],
+                cvss=identified_cve["CVSS"],
                 severity=identified_cve["severity"],
             )

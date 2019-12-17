@@ -13,10 +13,10 @@ class CreateNodesInGraph:
     gremlin_adapter = GremlinAdapter()
 
     @classmethod
-    def create_probable_vuln_node(cls, prob_cve_id: str) -> Dict:
+    def create_probable_vuln_node(cls, prob_vuln_id: str) -> Dict:
         """Create a new probable vulnerability node."""
         query = cls.label_builder("probable_vulnerability") + cls.property_builder(
-            vertex_label="probable_vulnerability", probable_vuln_id=prob_cve_id
+            vertex_label="probable_vulnerability", probable_vuln_id=prob_vuln_id
         )
         return cls.execute_query(query)
 

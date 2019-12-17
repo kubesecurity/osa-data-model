@@ -34,9 +34,7 @@ def create_nodes(*args, **kwargs):
                 version="{}_{}_{}".format(
                     dependency_version["version"], suffix, str(i)
                 ),
-                dep_name="{}_{}_{}".format(
-                    dependency_version["dependency_name"], suffix, str(i)
-                ),
+                dep_name="{}_{}".format(dependency_version["dependency_name"], suffix),
             )
         # Create a security event node. This will be equal to the number of dependency nodes.
         f = open(os.path.join(DATA_DIR, "security_event.json"))
@@ -52,7 +50,7 @@ def create_nodes(*args, **kwargs):
             f = open(os.path.join(DATA_DIR, "probable_vulnerability.json"))
             security_event = decode_json(f.read())
             CreateNodesInGraph.create_probable_vuln_node(
-                security_event["probable_vulnerability_id"]
+                security_event["probable_vuln_id"]
             )
         # Create an identified CVE node for every alternate probable CVE node. This means there'll
         # be half the number of identified CVE nodes as probale CVE nodes.

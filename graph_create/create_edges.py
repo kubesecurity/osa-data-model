@@ -20,22 +20,22 @@ class CreateEdges:
     def create_dependency_version_edge(cls, dependency_node, version_node):
         """Link a dependency node to a dependency_version node."""
         query = (
-            "from = g.V().has('vertex_label', 'dependency').has('dependency_name', {}).next();"
+            "from = g.V().has('vertex_label', 'dependency').has('dependency_name', '{}').next();"
             "to = g.V().has('vertex_label', 'dependency_version').has('dependency_name', "
             "'{}').toList();"
-            "to.each {toNode ->"
+            "to.each {{toNode ->"
             "   g.V(toNode).as('toNode').V(from).addE('has_version').property('edge_label', "
             "'has_version').to('toNode').toList();"
-            "}"
-        ).format(dependency_node["dependecy_name"], version_node["dependency_name"])
+            "}}"
+        ).format(dependency_node["dependency_name"], version_node["dependency_name"])
         return cls.gremlin_adapter.execute_query(query)
 
     @classmethod
     def create_probable_reported_cve_link(cls, probable, reported_cve):
         """Link a probable vulnerability node to an reported CVE."""
         query = (
-            "to = g.V().has('vertex_label', 'reported_cve').has('cve_id', '{}').next();"
-            "from = g.V().has('vertex_label', 'probable_vulnerability').has('prob_vuln_id', "
+            "to = g.V().has('vertex_label', 'reported_cve').has('CVE_ID', '{}').next();"
+            "from = g.V().has('vertex_label', 'probable_vulnerability').has('probable_vuln_id', "
             "'{}').next();"
             "g.V(to).as('toNode').V(from).addE('verified_to_cve').property('edge_label', "
             "'verified_to_cve').to('toNode').toList();"
@@ -46,12 +46,12 @@ class CreateEdges:
     def create_prob_vuln_sec_event_link(cls, prob, sec_event):
         """Link a probable vulnerability node to an event node."""
         query = (
-            "from = g.V().has('vertex_label','probable_vulnerability').has('prob_vuln_id', "
+            "from = g.V().has('vertex_label','probable_vulnerability').has('probable_vuln_id', "
             "'{}').next(); to = g.V().has('vertex_label', 'security_event').has('event_id', "
             "'{}').next();"
-            "g.V(to).as('to').V(to).addE('triaged_to').property('edge_label', 'triaged_to').to("
+            "g.V(to).as('to').V(from).addE('triaged_to').property('edge_label', 'triaged_to').to("
             "'to').toList();"
-        ).format(prob["prob_vuln_id"], sec_event["event_id"])
+        ).format(prob["probable_vuln_id"], sec_event["event_id"])
         return cls.gremlin_adapter.execute_query(query)
 
     @classmethod

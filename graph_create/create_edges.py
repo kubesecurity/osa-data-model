@@ -7,7 +7,7 @@ import daiquiri
 
 from gremlin_connect.gremlin_adapter import GremlinAdapter
 
-daiquiri.setup(level=logging.INFO)
+daiquiri.setup(level=logging.DEBUG)
 _logr = daiquiri.getLogger(__name__)
 
 
@@ -15,6 +15,13 @@ class CreateEdges:
     """Contains all the wrappers to create edges between two nodes."""
 
     gremlin_adapter = GremlinAdapter()
+
+    @classmethod
+    def execute_query(cls, query):
+        """Execute the gremlin query, but modify it by adding a commit and a .next()."""
+        # This exists so query can be pre-processed as required.
+        query += "g.tx().commit();"
+        return cls.gremlin_adapter.execute_query(query)
 
     @classmethod
     def create_dependency_version_edge(cls, dependency_node, version_node):
@@ -25,10 +32,10 @@ class CreateEdges:
             "'{}').toList();"
             "to.each {{toNode ->"
             "   g.V(toNode).as('toNode').V(from).addE('has_version').property('edge_label', "
-            "'has_version').to('toNode').toList();"
-            "}}"
+            "'has_version').to('toNode');"
+            "}};"
         ).format(dependency_node["dependency_name"], version_node["dependency_name"])
-        return cls.gremlin_adapter.execute_query(query)
+        return cls.execute_query(query)
 
     @classmethod
     def create_probable_reported_cve_link(cls, probable, reported_cve):
@@ -38,9 +45,9 @@ class CreateEdges:
             "from = g.V().has('vertex_label', 'probable_vulnerability').has('probable_vuln_id', "
             "'{}').next();"
             "g.V(to).as('toNode').V(from).addE('verified_to_cve').property('edge_label', "
-            "'verified_to_cve').to('toNode').toList();"
+            "'verified_to_cve').to('toNode');"
         ).format(reported_cve["CVE_ID"], probable["probable_vuln_id"])
-        return cls.gremlin_adapter.execute_query(query)
+        return cls.execute_query(query)
 
     @classmethod
     def create_prob_vuln_sec_event_link(cls, prob, sec_event):
@@ -50,9 +57,9 @@ class CreateEdges:
             "'{}').next(); to = g.V().has('vertex_label', 'security_event').has('event_id', "
             "'{}').next();"
             "g.V(to).as('to').V(from).addE('triaged_to').property('edge_label', 'triaged_to').to("
-            "'to').toList();"
+            "'to');"
         ).format(prob["probable_vuln_id"], sec_event["event_id"])
-        return cls.gremlin_adapter.execute_query(query)
+        return cls.execute_query(query)
 
     @classmethod
     def create_dependency_dependency_links(cls, dep1, dep2):
@@ -62,9 +69,9 @@ class CreateEdges:
             "'{}').next(); to = g.V().has('vertex_label', 'dependency').has('dependency_name', "
             "'{}').next();"
             "g.V(to).as('to').V(to).addE('depends_on').property('edge_label', 'depends_on').to("
-            "'to').toList();"
+            "'to');"
         ).format(dep1["dependency_name"], dep2["dependency_name"])
-        return cls.gremlin_adapter.execute_query(query)
+        return cls.execute_query(query)
 
     @classmethod
     def create_reported_cve_dependency_version_link(cls, cve, version_node):
@@ -74,8 +81,8 @@ class CreateEdges:
             "= g.V().has('vertex_label', 'dependency_version').has('dependency_name', "
             "'{}').has('version', '{}').next();"
             "g.V(to).as('to').V(to).addE('affects').property('edge_label', 'affects').to("
-            "'to').toList();"
+            "'to');"
         ).format(
             cve["CVE_ID"], version_node["dependency_name"], version_node["version"]
         )
-        return cls.gremlin_adapter.execute_query(query)
+        return cls.execute_query(query)

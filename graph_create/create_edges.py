@@ -31,8 +31,7 @@ class CreateEdges:
             "to = g.V().has('vertex_label', 'dependency_version').has('dependency_name', "
             "'{}').toList();"
             "to.each {{toNode ->"
-            "   g.V(toNode).as('toNode').V(from).addE('has_version').property('edge_label', "
-            "'has_version').to('toNode');"
+            "   from.addEdge('has_version', toNode).property('edge_label', 'has_version');"
             "}};"
         ).format(dependency_node["dependency_name"], version_node["dependency_name"])
         return cls.execute_query(query)
@@ -44,8 +43,7 @@ class CreateEdges:
             "to = g.V().has('vertex_label', 'reported_cve').has('CVE_ID', '{}').next();"
             "from = g.V().has('vertex_label', 'probable_vulnerability').has('probable_vuln_id', "
             "'{}').next();"
-            "g.V(to).as('toNode').V(from).addE('verified_to_cve').property('edge_label', "
-            "'verified_to_cve').to('toNode');"
+            "from.addEdge('verified_to_cve', to).property('edge_label', 'verified_to_cve');"
         ).format(reported_cve["CVE_ID"], probable["probable_vuln_id"])
         return cls.execute_query(query)
 
@@ -56,8 +54,7 @@ class CreateEdges:
             "from = g.V().has('vertex_label','probable_vulnerability').has('probable_vuln_id', "
             "'{}').next(); to = g.V().has('vertex_label', 'security_event').has('event_id', "
             "'{}').next();"
-            "g.V(to).as('to').V(from).addE('triaged_to').property('edge_label', 'triaged_to').to("
-            "'to');"
+            "from.addEdge('triaged_to', to).property('edge_label', 'triaged_to');"
         ).format(prob["probable_vuln_id"], sec_event["event_id"])
         return cls.execute_query(query)
 
@@ -68,8 +65,7 @@ class CreateEdges:
             "from = g.V().has('vertex_label', 'dependency').has('dependency_name', "
             "'{}').next(); to = g.V().has('vertex_label', 'dependency').has('dependency_name', "
             "'{}').next();"
-            "g.V(to).as('to').V(to).addE('depends_on').property('edge_label', 'depends_on').to("
-            "'to');"
+            "from.addEdge('depends_on', to).property('edge_label', 'depends_on');"
         ).format(dep1["dependency_name"], dep2["dependency_name"])
         return cls.execute_query(query)
 
@@ -80,8 +76,7 @@ class CreateEdges:
             "from = g.V().has('vertex_label', 'reported_cve').has('CVE_ID', '{}').next(); to "
             "= g.V().has('vertex_label', 'dependency_version').has('dependency_name', "
             "'{}').has('version', '{}').next();"
-            "g.V(to).as('to').V(to).addE('affects').property('edge_label', 'affects').to("
-            "'to');"
+            "from.addEdge('affects', to).property('edge_label', 'affects');"
         ).format(
             cve["CVE_ID"], version_node["dependency_name"], version_node["version"]
         )

@@ -3,7 +3,7 @@
 """Tests for graph creation."""
 import pytest
 from graph_create.create_nodes import CreateNodesInGraph
-from tests.conftest import gremlin_get
+from tests.conftest import gremlin_post
 import requests
 import json
 
@@ -28,12 +28,12 @@ def test_property_builder():
 
 def test_create_dependency_version_node(monkeypatch):
     """Test creation query of dependency-version node."""
-    monkeypatch.setattr(requests, "get", gremlin_get)
+    monkeypatch.setattr(requests, "post", gremlin_post)
     assert (
         CreateNodesInGraph.create_dependency_version_node(
             "1.0.0.alpha-v1", "github.com/kubernetes/apimachineary"
         )["executed"]
         == "g.addV('dependency_version').property('version', '1.0.0.alpha-v1').property("
         "'dependency_name', 'github.com/kubernetes/apimachineary').property('vertex_label', "
-        "'dependency_version').next();g.V().commit();"
+        "'dependency_version').next();"
     )

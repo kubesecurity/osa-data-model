@@ -64,7 +64,7 @@ class GremlinAdapter:
     def execute_query(self, query):
         """Execute a query on the Gremlin server."""
         _logr.debug("Executing query: {}\n".format(query))
-        response = requests.get(self.gremlin_url, params={"gremlin": query})
+        response = requests.post(self.gremlin_url, data=json.dumps({"gremlin": query}))
         try:
             return response.json()
         except JSONDecodeError:

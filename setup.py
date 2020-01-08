@@ -29,7 +29,7 @@ setup(
     license='GPLv3',
     url='https://github.com/fabric8-analytics/osa-data-model',
     keywords=['CVE', 'Probable CVE'],
-    python_requires='>=3.4',
+    python_requires='>=3.6',
     packages=find_packages(exclude=['tests', 'benchmark_data']),
     install_requires=_get_requirements(),
 )

@@ -140,3 +140,4 @@ dmypy.json
 # Pycharm, vscode
 .idea/
 .vscode/
+venv

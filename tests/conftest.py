@@ -16,6 +16,6 @@ class MockResponse:
         return {"executed": self._query}
 
 
-def gremlin_get(*args, **kwargs):
+def gremlin_post(*args, **kwargs):
     """Return a mock gremlin server instance."""
-    return MockResponse(kwargs["params"]["gremlin"])
+    return MockResponse(json.loads(kwargs["data"])["gremlin"])

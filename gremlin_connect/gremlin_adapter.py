@@ -16,11 +16,11 @@ GREMLIN_DEFAULT_HOST = "localhost"
 class GremlinAdapter:
     """Interactions with the Gremlin server."""
 
-    def __init__(self, gremlin_host=GREMLIN_DEFAULT_HOST):
+    def __init__(self, gremlin_host=GREMLIN_DEFAULT_HOST, gremlin_port=GREMLIN_DEFAULT_PORT):
         """Initialize an object of the adapter class."""
         super().__init__()
         self._gremlin_host = gremlin_host
-        self._gremlin_port = GREMLIN_DEFAULT_PORT
+        self._gremlin_port = gremlin_port
 
     @property
     def gremlin_host(self):
@@ -64,7 +64,7 @@ class GremlinAdapter:
     def execute_query(self, query):
         """Execute a query on the Gremlin server."""
         _logr.debug("Executing query: {}\n".format(query))
-        response = requests.get(self.gremlin_url, params={"gremlin": query})
+        response = requests.post(self.gremlin_url, data=json.dumps({"gremlin": query}))
         try:
             return response.json()
         except JSONDecodeError:
